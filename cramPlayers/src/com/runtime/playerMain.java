@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
+import java.util.Stack;
 
 
 public class playerMain {
@@ -276,6 +276,74 @@ public class playerMain {
 			//
 			////////////////////////////////////////////////////////
 			
+			/************************
+			 * Kevin's algorithm
+			 ************************/
+			
+			//grab each individual block and push into a stack
+			String block1 = "";
+			String block2 = "";
+			block1 = previousMove.substring(0, 2);
+			block2 = previousMove.substring(3);
+			Stack<String> prevMove = new Stack<String>();
+			//only pushes valid blocks into the stack. Meaning player one wont push null blocks into a stack when he goes first
+			if(block1 != "" && block2 != ""){
+				prevMove.push(block1);
+				prevMove.push(block2);
+			}
+			/*
+			 * validMoveCount - count until two moves are placed
+			 * currBlock - store the current block
+			 */
+			int validMoveCount = 0;
+			String currBlock = "";
+			String temp = "";
+			int row = 0;
+			int col = 0;
+			while(true){
+				currBlock = prevMove.pop();
+				temp = currBlock.substring(0,1);
+				row = letterCompare(temp);
+				if((row-1) >=0 && boardMatrix[row-1][col] == 'O'){
+					validMoveCount = findMove(row-1, col, boardMatrix);
+					if(validMoveCount != -1){
+						row--;
+						break;
+					}
+				}
+				if((col+1) <=4 && boardMatrix[row][col+1] == 'O'){
+					validMoveCount = findMove(row, col+1, boardMatrix);
+					if(validMoveCount != -1){
+						col++;
+						break;
+					}
+				}
+				if((row+1) <=4 && boardMatrix[row+1][col] == 'O'){
+					validMoveCount = findMove(row+1, col, boardMatrix);
+					if(validMoveCount != -1){
+						row++;
+						break;
+					}
+				}
+				if((col-1) >=0 && boardMatrix[row][col-1] == 'O'){
+					validMoveCount = findMove(row, col-1, boardMatrix);
+					if(validMoveCount != -1){
+						col--;
+						break;
+					}
+				}
+			}
+			if(validMoveCount == 0){
+				playerMove = revLetterCompare(row) + Integer.toString(col) + revLetterCompare(row-1) + Integer.toString(col);
+			} else if(validMoveCount == 1){
+				playerMove = revLetterCompare(row) + Integer.toString(col) + revLetterCompare(row) + Integer.toString(col+1);
+			}else if(validMoveCount == 2){
+				playerMove = revLetterCompare(row) + Integer.toString(col) + revLetterCompare(row+1) + Integer.toString(col);
+			}else if(validMoveCount == 3){
+				playerMove = revLetterCompare(row) + Integer.toString(col) + revLetterCompare(row) + Integer.toString(col-1);
+			}
+			
+			
 			System.out.println("Enter move (for testing, to be replaced with algorithm):");
 			playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
 			
@@ -288,5 +356,39 @@ public class playerMain {
 			return playerMove;
 			
 		}
-		
+		public static int letterCompare(String temp){
+			switch (temp){
+			case "A": return 0;
+			case "B": return 1;
+			case "C": return 2;
+			case "D": return 3;
+			case "E": return 4;
+			default: return 0;
+			}
+		}
+		public static String revLetterCompare(int row){
+			switch (row){
+			case 0: return "A";
+			case 1: return "B";
+			case 2: return "C";
+			case 3: return "D";
+			case 4: return "E";
+			default: return "A";
+			}
+		}
+		public static int findMove(int row, int col, char boardMatrix[][]){
+			if((row-1) >=0 && boardMatrix[row-1][col] == 'O'){
+				return 0;
+			}
+			if((col+1) <=4 && boardMatrix[row][col+1] == 'O'){
+				return 1;
+			}
+			if((row+1) <=4 && boardMatrix[row+1][col] == 'O'){
+				return 2;
+			}
+			if((col-1) >=0 && boardMatrix[row][col-1] == 'O'){
+				return 3;
+			}
+			return -1;
+		}
 }
