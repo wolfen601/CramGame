@@ -279,14 +279,15 @@ public class playerMain {
 			/*
 			 * calculate when to stop placing random stuff
 			 */
-			boolean survive = true;
 			
-			//calculation here
-			
-			if(survive == true){
+			//calculation number of free pieces here
+			int numFreeBlocks = 0;
+			numFreeBlocks = calcFree(boardMatrix);
+			if(numFreeBlocks > 10){
 				playerMove = kevAlgo(previousMove, boardMatrix);
 			}else{
 				//insert nimbers tree thing here Dan
+				playerMove = danAlgo(previousMove, boardMatrix);
 			}
 			
 			
@@ -382,6 +383,9 @@ public class playerMain {
 				playerMove = revLetterCompare(row) + Integer.toString(col) + revLetterCompare(row) + Integer.toString(col-1);
 			}else{
 				//replace with nimber algorithm if it cannot find a spot
+				
+				playerMove = danAlgo(previousMove, boardMatrix);
+				
 				System.out.println("Enter move (for testing, to be replaced with algorithm):");
 				playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
 			}
@@ -430,5 +434,11 @@ public class playerMain {
 				return 3;
 			}
 			return -1;
+		}
+		public static int calcFree(char boardMatrix[][]){
+			return 0;
+		}
+		public static String danAlgo(String previousMove,  char boardMatrix[][]){
+			return "";
 		}
 }
