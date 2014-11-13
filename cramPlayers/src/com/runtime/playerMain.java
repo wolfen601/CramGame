@@ -276,6 +276,31 @@ public class playerMain {
 			//
 			////////////////////////////////////////////////////////
 			
+			/*
+			 * calculate when to stop placing random stuff
+			 */
+			boolean survive = true;
+			
+			//calculation here
+			
+			if(survive == true){
+				playerMove = kevAlgo(previousMove, boardMatrix);
+			}else{
+				//insert nimbers tree thing here Dan
+			}
+			
+			
+			//////////////////////////////////////////////////////
+			// END OF ALGORITHM
+			//////////////////////////////////////////////////////
+			return playerMove;
+			
+		}
+		/*
+		 * Placing algorithm to survive in the game. It just tries to find a spot to place,
+		 * If it cannot find a spot, it will move to Nimber algorithm to find a spot.
+		 */
+		public static String kevAlgo(String previousMove,  char boardMatrix[][]) throws IOException{
 			/************************
 			 * Kevin's algorithm
 			 ************************/
@@ -295,6 +320,7 @@ public class playerMain {
 			 * validMoveCount - count until two moves are placed
 			 * currBlock - store the current block
 			 */
+			String playerMove = "";
 			int validMoveCount = 0;
 			String currBlock = "";
 			String temp = "";
@@ -302,60 +328,68 @@ public class playerMain {
 			int col = 0;
 			while(true){
 				currBlock = prevMove.pop();
+				if(currBlock == ""){
+					validMoveCount = -1;
+					break;
+				}
 				temp = currBlock.substring(0,1);
 				row = letterCompare(temp);
+				/* These ifs will check the squares around the current block
+				 * If it can find a valid move, tries to find the next valid 
+				 * square around it. If it can find a valid second square, it
+				 * will skip the if statements and move to finding the answer
+				 */
 				if((row-1) >=0 && boardMatrix[row-1][col] == 'O'){
-					validMoveCount = findMove(row-1, col, boardMatrix);
+					validMoveCount = findSecondMove(row-1, col, boardMatrix);
 					if(validMoveCount != -1){
 						row--;
 						break;
 					}
 				}
 				if((col+1) <=4 && boardMatrix[row][col+1] == 'O'){
-					validMoveCount = findMove(row, col+1, boardMatrix);
+					validMoveCount = findSecondMove(row, col+1, boardMatrix);
 					if(validMoveCount != -1){
 						col++;
 						break;
 					}
 				}
 				if((row+1) <=4 && boardMatrix[row+1][col] == 'O'){
-					validMoveCount = findMove(row+1, col, boardMatrix);
+					validMoveCount = findSecondMove(row+1, col, boardMatrix);
 					if(validMoveCount != -1){
 						row++;
 						break;
 					}
 				}
 				if((col-1) >=0 && boardMatrix[row][col-1] == 'O'){
-					validMoveCount = findMove(row, col-1, boardMatrix);
+					validMoveCount = findSecondMove(row, col-1, boardMatrix);
 					if(validMoveCount != -1){
 						col--;
 						break;
 					}
 				}
+				
 			}
+			/* Will find a move based on the second square location.
+			 * Builds the playerMove answer based on those locations
+			 */
 			if(validMoveCount == 0){
 				playerMove = revLetterCompare(row) + Integer.toString(col) + revLetterCompare(row-1) + Integer.toString(col);
-			} else if(validMoveCount == 1){
+			}else if(validMoveCount == 1){
 				playerMove = revLetterCompare(row) + Integer.toString(col) + revLetterCompare(row) + Integer.toString(col+1);
 			}else if(validMoveCount == 2){
 				playerMove = revLetterCompare(row) + Integer.toString(col) + revLetterCompare(row+1) + Integer.toString(col);
 			}else if(validMoveCount == 3){
 				playerMove = revLetterCompare(row) + Integer.toString(col) + revLetterCompare(row) + Integer.toString(col-1);
+			}else{
+				//replace with nimber algorithm if it cannot find a spot
+				System.out.println("Enter move (for testing, to be replaced with algorithm):");
+				playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
 			}
-			
-			
-			System.out.println("Enter move (for testing, to be replaced with algorithm):");
-			playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
-			
-			
-			
-			//////////////////////////////////////////////////////
-			// END OF ALGORITHM
-			//////////////////////////////////////////////////////
-			
 			return playerMove;
-			
 		}
+		/*
+		 * Simple function to change String to integer for the Blocks
+		 */
 		public static int letterCompare(String temp){
 			switch (temp){
 			case "A": return 0;
@@ -366,6 +400,9 @@ public class playerMain {
 			default: return 0;
 			}
 		}
+		/*
+		 * Simple function to change integer to String for the Blocks (reverse)
+		 */
 		public static String revLetterCompare(int row){
 			switch (row){
 			case 0: return "A";
@@ -376,7 +413,10 @@ public class playerMain {
 			default: return "A";
 			}
 		}
-		public static int findMove(int row, int col, char boardMatrix[][]){
+		/*
+		 * Finds the second position to determine whether it can place a square
+		 */
+		public static int findSecondMove(int row, int col, char boardMatrix[][]){
 			if((row-1) >=0 && boardMatrix[row-1][col] == 'O'){
 				return 0;
 			}
