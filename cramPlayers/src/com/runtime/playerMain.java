@@ -8,6 +8,8 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Stack;
+import java.util.StringTokenizer;
+import java.lang.Integer;
 
 
 public class playerMain {
@@ -439,6 +441,71 @@ public class playerMain {
 			return 0;
 		}
 		public static String danAlgo(String previousMove,  char boardMatrix[][]){
+			int row = 5;
+			int col = 5;
+			boolean bool = false;
+			String split = 0;
+			StringTokenizer st;
+			
+			for (int i = 0; i < row; i++) {
+				for (int j = 0; j < col; j++) {
+					bool = checkSolo(boardMatrix, i, j);
+					if (bool == true) {
+						boardMatrix[i][j] = 'M';
+					}
+					split = checkSplittable(boardMatrix, row, col);
+					st = new StringTokenizer(split);
+					while (st.hasMoreTokens()) {
+						String element = st.nextToken();
+						String letter = element.substring(0,1);
+						String sNumber = element.substring(1);
+						int number = Integer.parseInt(sNumber);
+					}
+					
+				}
+			}
 			return "";
+		}
+
+
+		public static boolean checkSolo(char subMatrix[][], int row, int col) {
+			//if this doesn't work, make a nested loop. Check if it's within the boundaries first, then if everything beside is 'O'.
+			if ((subMatrix[row+1][col] != 'O' && row+1 <= 5) && (subMatrix[row-1][col] != 'O' && row-1 >= 0) && (subMatrix[row][col+1] != 'O' && col+1 <= 5) && (subMatrix[row][col-1] != 'O' && col-1 >=0)) {
+				return true;
+			}
+			return false;
+		}
+		public static String checkSplittable(char subMatrix[][], int row, int col) {
+			boolean check;
+			String splits;
+			
+			for (int i = 0; i < row; i++) {
+				for (int j = 0; j < col; j++) {
+					if (subMatrix[i][j] != 'O') {
+						check = true;
+						continue;
+					}
+					check = false;
+					break; 
+				}
+				if (check == true) {
+					splits += "R" + Integer.toString(i) + " ";
+				}
+			}
+			
+			for (int i = 0; i < col; i++) {
+				for (int j = 0; j < row; j++) {
+					if (subMatrix[j][i] != 'O') {
+						check = true;
+						continue;
+					}
+					check = false;
+					break;
+				}
+				if (check == true) {
+					splits += "C" + Integer.toString(j) + " ";
+				}
+			}
+			return splits;
 		}
 }
