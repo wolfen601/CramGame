@@ -33,6 +33,8 @@ public class playerMain {
 		private static String turn;
 		private static String boardAsString;
 		private static String previousMove;
+		
+		private static Stack<String> prevMove = new Stack<String>();
 			
 		public static void main(String[] args) throws UnknownHostException, IOException{
 			
@@ -313,7 +315,6 @@ public class playerMain {
 			String block2 = "";
 			block1 = previousMove.substring(0, 2);
 			block2 = previousMove.substring(3);
-			Stack<String> prevMove = new Stack<String>();
 			//only pushes valid blocks into the stack. Meaning player one wont push null blocks into a stack when he goes first
 			if(block1 != "" && block2 != ""){
 				prevMove.push(block1);
@@ -330,7 +331,7 @@ public class playerMain {
 			int row = 0;
 			int col = 0;
 			while(true){
-				currBlock = prevMove.pop();
+				currBlock = prevMove.peek();
 				if(currBlock == ""){
 					validMoveCount = -1;
 					break;
@@ -370,6 +371,7 @@ public class playerMain {
 						break;
 					}
 				}
+				prevMove.pop();
 				
 			}
 			/* Will find a move based on the second square location.
@@ -388,8 +390,8 @@ public class playerMain {
 				
 				playerMove = danAlgo(previousMove, boardMatrix);
 				
-				System.out.println("Enter move (for testing, to be replaced with algorithm):");
-				playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
+				//System.out.println("Enter move (for testing, to be replaced with algorithm):");
+				//playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
 			}
 			return playerMove;
 		}
@@ -444,7 +446,7 @@ public class playerMain {
 			int row = 5;
 			int col = 5;
 			boolean bool = false;
-			String split = 0;
+			String split = "0";
 			StringTokenizer st;
 			
 			for (int i = 0; i < row; i++) {
