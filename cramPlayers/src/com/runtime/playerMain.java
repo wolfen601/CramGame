@@ -478,8 +478,8 @@ public class playerMain {
 			return false;
 		}
 		public static String checkSplittable(char subMatrix[][], int row, int col) {
-			boolean check;
-			String splits;
+			boolean check = false;
+			String splits = null;
 			
 			for (int i = 0; i < row; i++) {
 				for (int j = 0; j < col; j++) {
@@ -505,7 +505,7 @@ public class playerMain {
 					break;
 				}
 				if (check == true) {
-					splits += "C" + Integer.toString(j) + " ";
+					splits += "C" + Integer.toString(i) + " ";
 				}
 			}
 			return splits;

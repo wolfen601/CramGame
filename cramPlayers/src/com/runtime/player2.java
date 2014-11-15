@@ -311,11 +311,15 @@ public class player2 {
 				//calculation number of free pieces here
 				int numFreeBlocks = 0;
 				numFreeBlocks = calcFree(boardMatrix);
-				if(numFreeBlocks > 10){
+				if(numFreeBlocks < 10){
 					playerMove = kevAlgo(previousMove, boardMatrix);
 				}else{
 					//insert nimbers tree thing here Dan
-					playerMove = danAlgo(previousMove, boardMatrix);
+					//playerMove = danAlgo(previousMove, boardMatrix);
+					System.out.println("Enter move (for testing, to be replaced with algorithm):");
+					playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
+					
+					
 				}
 				//System.out.println("Enter move (for testing, to be replaced with algorithm):");
 				//playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
@@ -343,7 +347,8 @@ public class player2 {
 				String block1 = "";
 				String block2 = "";
 				block1 = previousMove.substring(0, 2);
-				block2 = previousMove.substring(3);
+				block2 = previousMove.substring(2);
+				System.out.println(block1 + ":" + block2);
 				//only pushes valid blocks into the stack. Meaning player one wont push null blocks into a stack when he goes first
 				if(block1 != "" && block2 != ""){
 					prevMove.push(block1);
@@ -361,39 +366,49 @@ public class player2 {
 				int col = 0;
 				while(true){
 					currBlock = prevMove.peek();
+					System.out.println("currBlock: " + currBlock);
 					if(currBlock == ""){
 						validMoveCount = -1;
 						break;
 					}
 					temp = currBlock.substring(0,1);
-					row = letterCompare(temp);
+					col = letterCompare(temp);
+					temp = currBlock.substring(1);
+					row = Integer.parseInt(temp);
+					row--;
 					/* These ifs will check the squares around the current block
 					 * If it can find a valid move, tries to find the next valid 
 					 * square around it. If it can find a valid second square, it
 					 * will skip the if statements and move to finding the answer
 					 */
-					if((row-1) >=0 && boardMatrix[row-1][col] == 'O'){
+					//System.out.println("1");
+					//System.out.println("row" + row + ":col" + col);
+					if((row-1) >=0 && boardMatrix[col][row-1] == 'O'){
 						validMoveCount = findSecondMove(row-1, col, boardMatrix);
 						if(validMoveCount != -1){
 							row--;
 							break;
 						}
 					}
-					if((col+1) <=4 && boardMatrix[row][col+1] == 'O'){
+					//System.out.println("row" + row + ":col" + col);
+					//System.out.println("2");
+					if((col+1) <=4 && boardMatrix[col+1][row] == 'O'){
 						validMoveCount = findSecondMove(row, col+1, boardMatrix);
 						if(validMoveCount != -1){
 							col++;
 							break;
 						}
 					}
-					if((row+1) <=4 && boardMatrix[row+1][col] == 'O'){
+					//System.out.println("3");
+					if((row+1) <=4 && boardMatrix[col][row+1] == 'O'){
 						validMoveCount = findSecondMove(row+1, col, boardMatrix);
 						if(validMoveCount != -1){
 							row++;
 							break;
 						}
 					}
-					if((col-1) >=0 && boardMatrix[row][col-1] == 'O'){
+					//System.out.println("4");
+					if((col-1) >=0 && boardMatrix[col-1][row] == 'O'){
 						validMoveCount = findSecondMove(row, col-1, boardMatrix);
 						if(validMoveCount != -1){
 							col--;
@@ -406,22 +421,24 @@ public class player2 {
 				/* Will find a move based on the second square location.
 				 * Builds the playerMove answer based on those locations
 				 */
+				row++;
 				if(validMoveCount == 0){
-					playerMove = revLetterCompare(row) + Integer.toString(col) + revLetterCompare(row-1) + Integer.toString(col);
+					playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col) + Integer.toString(row-1);
 				}else if(validMoveCount == 1){
-					playerMove = revLetterCompare(row) + Integer.toString(col) + revLetterCompare(row) + Integer.toString(col+1);
+					playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col+1) + Integer.toString(row);
 				}else if(validMoveCount == 2){
-					playerMove = revLetterCompare(row) + Integer.toString(col) + revLetterCompare(row+1) + Integer.toString(col);
+					playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col) + Integer.toString(row+1);
 				}else if(validMoveCount == 3){
-					playerMove = revLetterCompare(row) + Integer.toString(col) + revLetterCompare(row) + Integer.toString(col-1);
+					playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col-1) + Integer.toString(row);
 				}else{
 					//replace with nimber algorithm if it cannot find a spot
 					
-					playerMove = danAlgo(previousMove, boardMatrix);
+					//playerMove = danAlgo(previousMove, boardMatrix);
 					
-					//System.out.println("Enter move (for testing, to be replaced with algorithm):");
-					//playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
+					System.out.println("Enter move (for testing, to be replaced with algorithm):");
+					playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
 				}
+				System.out.println("--->" + playerMove);
 				return playerMove;
 			}
 			/*
@@ -454,16 +471,21 @@ public class player2 {
 			 * Finds the second position to determine whether it can place a square
 			 */
 			public static int findSecondMove(int row, int col, char boardMatrix[][]){
-				if((row-1) >=0 && boardMatrix[row-1][col] == 'O'){
+				//System.out.println("row" + row + ":col" + col + ":board" + boardMatrix[row-1][col]);
+				//System.out.println("A");
+				if((row-1) >=0 && boardMatrix[col][row-1] == 'O'){
 					return 0;
 				}
-				if((col+1) <=4 && boardMatrix[row][col+1] == 'O'){
+				//System.out.println("B");
+				if((col+1) <=4 && boardMatrix[col+1][row] == 'O'){
 					return 1;
 				}
-				if((row+1) <=4 && boardMatrix[row+1][col] == 'O'){
+				//System.out.println("C");
+				if((row+1) <=4 && boardMatrix[col][row+1] == 'O'){
 					return 2;
 				}
-				if((col-1) >=0 && boardMatrix[row][col-1] == 'O'){
+				//System.out.println("D");
+				if((col-1) >=0 && boardMatrix[col-1][row] == 'O'){
 					return 3;
 				}
 				return -1;
