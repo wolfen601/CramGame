@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.Random;
 
 
 public class player2 {
@@ -311,13 +312,13 @@ public class player2 {
 				//calculation number of free pieces here
 				int numFreeBlocks = 0;
 				numFreeBlocks = calcFree(boardMatrix);
-				if(numFreeBlocks < 10){
+				if(numFreeBlocks < 12){
 					playerMove = kevAlgo(previousMove, boardMatrix);
 				}else{
 					//insert nimbers tree thing here Dan
-					//playerMove = danAlgo(previousMove, boardMatrix);
-					System.out.println("Enter move (for testing, to be replaced with algorithm):");
-					playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
+					playerMove = danAlgo(previousMove, boardMatrix);
+					//System.out.println("Enter move (for testing, to be replaced with algorithm):");
+					//playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
 					
 					
 				}
@@ -367,15 +368,28 @@ public class player2 {
 				while(true){
 					currBlock = prevMove.peek();
 					System.out.println("currBlock: " + currBlock);
+					/*
+					 * if the block is null means the stack is empty or first move is player one.
+					 * generate random number inside the grid to see if it will work
+					 * otherwise use the block inside the stack
+					 */
 					if(currBlock == null){
-						validMoveCount = -1;
-						break;
+						Random random = new Random();
+						while(true){
+							int rand = random.nextInt(25);
+							if(boardMatrix[rand%5][rand/5] != 'O'){
+								row = rand/5;
+								col = rand%5;
+								break;
+							}
+						}
+					}else{
+						temp = currBlock.substring(0,1);
+						col = letterCompare(temp);
+						temp = currBlock.substring(1);
+						row = Integer.parseInt(temp);
+						row--;
 					}
-					temp = currBlock.substring(0,1);
-					col = letterCompare(temp);
-					temp = currBlock.substring(1);
-					row = Integer.parseInt(temp);
-					row--;
 					/* These ifs will check the squares around the current block
 					 * If it can find a valid move, tries to find the next valid 
 					 * square around it. If it can find a valid second square, it
@@ -433,12 +447,16 @@ public class player2 {
 				}else{
 					//replace with nimber algorithm if it cannot find a spot
 					
-					//playerMove = danAlgo(previousMove, boardMatrix);
+					playerMove = danAlgo(previousMove, boardMatrix);
 					
-					System.out.println("Enter move (for testing, to be replaced with algorithm):");
-					playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
+					//System.out.println("Enter move (for testing, to be replaced with algorithm):");
+					//playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
 				}
-				System.out.println("--->" + playerMove);
+				//push the player move into the stack as well. This will make it able to use it as a reference
+				block1 = playerMove.substring(0, 2);
+				block2 = playerMove.substring(2);
+				prevMove.push(block1);
+				prevMove.push(block2);
 				return playerMove;
 			}
 			/*
