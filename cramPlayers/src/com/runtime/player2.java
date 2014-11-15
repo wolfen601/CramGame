@@ -350,7 +350,7 @@ public class player2 {
 				block2 = previousMove.substring(2);
 				System.out.println(block1 + ":" + block2);
 				//only pushes valid blocks into the stack. Meaning player one wont push null blocks into a stack when he goes first
-				if(block1 != "" && block2 != ""){
+				if(block1 != null && block2 != null){
 					prevMove.push(block1);
 					prevMove.push(block2);
 				}
@@ -367,7 +367,7 @@ public class player2 {
 				while(true){
 					currBlock = prevMove.peek();
 					System.out.println("currBlock: " + currBlock);
-					if(currBlock == ""){
+					if(currBlock == null){
 						validMoveCount = -1;
 						break;
 					}
