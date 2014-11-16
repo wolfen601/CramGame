@@ -478,6 +478,11 @@ public class playerMain {
 			}
 			return false;
 		}
+		/* Check if a string of blocks reaches two edges. If it does, then it is splittable.
+		 * There is a boolean matrix that holds value of whether of not it is an edge block
+		 * both of the values must be true for it to be splittable
+		 * return the values of the edgeBlocks
+		 * greatest block - least block = size of subarray*/
 		public static String checkSplittable(char subMatrix[][], int col, int row) {
 			int temp1 = col;
 			int temp2 = row;
@@ -485,7 +490,9 @@ public class playerMain {
 			String retval = "false";
 			boolean[] edgeBlock = new boolean[2];
 			
+			//recursive call
 			if (col != 0 || row != 0){
+				//if piece is an edgeBlock, return true
 				if ((temp1+1 <= 4 && temp1-1 >= 0) || (temp2+1 <= 4 && temp2-1 >= 0)){
 					if(subMatrix[temp1][temp2+1] != 'O'){
 						retval = checkSplittable(subMatrix, temp1, temp2+1);
@@ -499,23 +506,34 @@ public class playerMain {
 					if(subMatrix[temp1+1][temp2-1] != 'O'){
 						retval = checkSplittable(subMatrix, temp1+1, temp2-1);
 					}
+					if(subMatrix[temp1][temp2-1] != 'O'){
+						retval = checkSplittable(subMatrix, temp1, temp2-1);
+					}
 					if (retval.equals("true")){
 						return "true";
 					}
 					return "false";
 				}
-
 				else{
 					return "true";
 				}
 			}
 			
+			//checks for not open spot.
 			for (int j = temp1; j < 5; j++){
 				for(int i = temp2; i < 5; i++){
 					if (subMatrix[j][i] != 'O') {
+						//checks if it's an edgeBlock (not affiliated to the edgeBlock Matrix)
 						if ((j+1 <= 4 && j-1 >= 0) || (i+1 <= 4 && i-1 >= 0)){
-							if(subMatrix[j][i+1] != 'O' || subMatrix[j+1][i] != 'O' || subMatrix[j][i+1] != 'O' || subMatrix[j+1][i-1] != 'O'){
+							if(subMatrix[j][i+1] != 'O' || subMatrix[j+1][i] != 'O' || subMatrix[j][i+1] != 'O' || subMatrix[j+1][i-1] != 'O' || subMatrix[j][i-1] != 'O'){
 								retval = checkSplittable(subMatrix, temp1, temp2);
+								if (retval.equals("true")){
+									edgeBlock[count] = true;
+									count++;
+								}
+								else{
+									return "false";
+								}
 							}
 						}
 					}
