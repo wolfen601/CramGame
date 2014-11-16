@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import java.util.Stack;
 import java.util.StringTokenizer;
 import java.lang.Integer;
+import java.lang.Object;
 
 
 public class playerMain {
@@ -455,7 +456,7 @@ public class playerMain {
 					if (bool == true) {
 						boardMatrix[i][j] = 'M';
 					}
-					split = checkSplittable(boardMatrix, row, col);
+					split = checkSplittable(boardMatrix, 0, 0);
 					st = new StringTokenizer(split);
 					while (st.hasMoreTokens()) {
 						String element = st.nextToken();
@@ -477,37 +478,48 @@ public class playerMain {
 			}
 			return false;
 		}
-		public static String checkSplittable(char subMatrix[][], int row, int col) {
-			boolean check = false;
-			String splits = null;
+		public static String checkSplittable(char subMatrix[][], int col, int row) {
+			int temp1 = col;
+			int temp2 = row;
+			int count = 0;
+			String retval = "false";
+			boolean[] edgeBlock = new boolean[2];
 			
-			for (int i = 0; i < row; i++) {
-				for (int j = 0; j < col; j++) {
-					if (subMatrix[i][j] != 'O') {
-						check = true;
-						continue;
+			if (col != 0 || row != 0){
+				if ((temp1+1 <= 4 && temp1-1 >= 0) || (temp2+1 <= 4 && temp2-1 >= 0)){
+					if(subMatrix[temp1][temp2+1] != 'O'){
+						retval = checkSplittable(subMatrix, temp1, temp2+1);
 					}
-					check = false;
-					break; 
+					if(subMatrix[temp1+1][temp2] != 'O'){
+						retval = checkSplittable(subMatrix, temp1+1, temp2);
+					}
+					if(subMatrix[temp1+1][temp2+1] != 'O'){
+						retval = checkSplittable(subMatrix, temp1+1, temp2+1);
+					}
+					if(subMatrix[temp1+1][temp2-1] != 'O'){
+						retval = checkSplittable(subMatrix, temp1+1, temp2-1);
+					}
+					if (retval.equals("true")){
+						return "true";
+					}
+					return "false";
 				}
-				if (check == true) {
-					splits += "R" + Integer.toString(i) + " ";
+
+				else{
+					return "true";
 				}
 			}
 			
-			for (int i = 0; i < col; i++) {
-				for (int j = 0; j < row; j++) {
+			for (int j = temp1; j < 5; j++){
+				for(int i = temp2; i < 5; i++){
 					if (subMatrix[j][i] != 'O') {
-						check = true;
-						continue;
+						if ((j+1 <= 4 && j-1 >= 0) || (i+1 <= 4 && i-1 >= 0)){
+							if(subMatrix[j][i+1] != 'O' || subMatrix[j+1][i] != 'O' || subMatrix[j][i+1] != 'O' || subMatrix[j+1][i-1] != 'O'){
+								retval = checkSplittable(subMatrix, temp1, temp2);
+							}
+						}
 					}
-					check = false;
-					break;
-				}
-				if (check == true) {
-					splits += "C" + Integer.toString(i) + " ";
 				}
 			}
-			return splits;
 		}
 }
