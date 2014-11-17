@@ -310,9 +310,9 @@ public class player2 {
 				 */
 				
 				//calculation number of free pieces here
-				int numFreeBlocks = 0;
-				numFreeBlocks = calcFree(boardMatrix);
-				if(numFreeBlocks < 12){
+				int numFreeBlocks = 16;
+				//numFreeBlocks = calcFree();
+				if(numFreeBlocks > 15){
 					playerMove = kevAlgo(previousMove, boardMatrix);
 				}else{
 					//insert nimbers tree thing here Dan
@@ -509,8 +509,14 @@ public class player2 {
 				return -1;
 			}
 	
-			public static int calcFree(char boardMatrix[][]){
-				return 0;
+			public static int calcFree(){
+				int num = 0;
+				for(int index = 0; index < 25; index++){
+					if(boardAsString.charAt(index) == 'O'){
+						num++;
+					}
+				}
+				return num;
 			}
 			public static String danAlgo(String previousMove,  char boardMatrix[][]){
 				int row = 5;
