@@ -7,14 +7,14 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Random;
-import java.util.Stack;
-import java.util.StringTokenizer;
+//import java.util.Random;
+//import java.util.Stack;
+//import java.util.StringTokenizer;
 import java.lang.Integer;
 import java.lang.Object;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+//import java.util.ArrayList;
+//import java.util.LinkedList;
+import java.util.*;
 
 import javax.swing.tree.TreeNode;
 
@@ -23,11 +23,47 @@ import org.w3c.dom.Node;
 
 
 public class playerMain {
+		
+		/*public boolean board[][];
+		public TreeNode parent;
+		public TreeNode child[];
+		public boolean isWin;
+		public int depth;
+		//constructor for root
+		public TreeNode () {
+			this.depth = 0;
+			board = new boolean[5][5];
+			parent = null;
+			child = null;
+		}*/
 	
-	public class TreeNode<T> {
+	
+	// The client socket
+	private static Socket clientSocket = null;
+	// The output stream
+	private static PrintStream os = null;
+	// The input stream
+	private static DataInputStream is = null;
+	private static BufferedReader inputLine = null;
+	private static boolean closed = false;
+	
+	private static String input;
+	
+	private static boolean inGame = false;
+	
+	private static String gameID;
+	
+	private static String turn;
+	private static String boardAsString;
+	private static String previousMove;
+	
+	private static Stack<String> prevMove = new Stack<String>();
+	
+	static public class TreeNode<T> {
 		public T data;
 		public TreeNode<T> parent;
-		public List<TreeNode<T>> children;
+		public List<TreeNode<T>> children = new ArrayList<TreeNode<T>>();
+		public boolean isWin;
 		
 		public boolean isRoot() {
 			return parent == null;
@@ -79,42 +115,7 @@ public class playerMain {
 			}
 			return null;
 		}
-		
-		/*public boolean board[][];
-		public TreeNode parent;
-		public TreeNode child[];
-		public boolean isWin;
-		public int depth;
-		//constructor for root
-		public TreeNode () {
-			this.depth = 0;
-			board = new boolean[5][5];
-			parent = null;
-			child = null;
-		}*/
 	}
-	
-	
-	// The client socket
-	private static Socket clientSocket = null;
-	// The output stream
-	private static PrintStream os = null;
-	// The input stream
-	private static DataInputStream is = null;
-	private static BufferedReader inputLine = null;
-	private static boolean closed = false;
-	
-	private static String input;
-	
-	private static boolean inGame = false;
-	
-	private static String gameID;
-	
-	private static String turn;
-	private static String boardAsString;
-	private static String previousMove;
-	
-	private static Stack<String> prevMove = new Stack<String>();
 	
 		
 	public static void main(String[] args) throws UnknownHostException, IOException{
@@ -122,6 +123,8 @@ public class playerMain {
 		//////////////////////////////////////////////////
 		// JOIN SERVER
 		//////////////////////////////////////////////////
+		
+		
 		
 		clientSocket = new Socket("beastMode.ddns.net", 63400);
 		inputLine = new BufferedReader(new InputStreamReader(System.in));
@@ -573,6 +576,8 @@ public class playerMain {
 		return num;
 	}
 	public static String danAlgo(String previousMove,  char boardMatrix[][]){
+		TreeNode<char[][]> root = new TreeNode<char[][]>(boardMatrix);
+		
 		int row = 5;
 		int col = 5;
 		boolean bool = false;
@@ -608,10 +613,6 @@ public class playerMain {
 			}
 		}
 		return "";
-	}
-	
-	public static findDepth(char[][] board){
-		
 	}
 		
 	public static ArrayList<Boolean> tempBoard(char tempMatrix[][]){
