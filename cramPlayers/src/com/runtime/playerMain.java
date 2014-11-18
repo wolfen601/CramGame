@@ -7,37 +7,13 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-//import java.util.Random;
-//import java.util.Stack;
-//import java.util.StringTokenizer;
 import java.lang.Integer;
-import java.lang.Object;
-//import java.util.ArrayList;
-//import java.util.LinkedList;
 import java.util.*;
 
-import javax.swing.tree.TreeNode;
-
-import org.w3c.dom.Node;
 
 
 
 public class playerMain {
-		
-		/*public boolean board[][];
-		public TreeNode parent;
-		public TreeNode child[];
-		public boolean isWin;
-		public int depth;
-		//constructor for root
-		public TreeNode () {
-			this.depth = 0;
-			board = new boolean[5][5];
-			parent = null;
-			child = null;
-		}*/
-	
-	
 	// The client socket
 	private static Socket clientSocket = null;
 	// The output stream
@@ -58,74 +34,13 @@ public class playerMain {
 	private static String previousMove;
 	
 	private static Stack<String> prevMove = new Stack<String>();
-	
-	static public class TreeNode<T> {
-		public T data;
-		public TreeNode<T> parent;
-		public List<TreeNode<T>> children = new ArrayList<TreeNode<T>>();
-		public boolean isWin;
-		
-		public boolean isRoot() {
-			return parent == null;
-		}
-		
-		public boolean isLeaf() {
-			return children.size() == 0;
-		}
-		
-		private List<TreeNode<T>> elementsIndex;
-		
-		public TreeNode(T data) {
-			this.data = data;
-			this.children = new LinkedList<TreeNode<T>>();
-			this.elementsIndex = new LinkedList<TreeNode<T>>();
-			this.elementsIndex.add(this);
-		}
-		
-		public TreeNode<T> addChild(T child){
-			TreeNode<T> childNode = new TreeNode<T>(child);
-			childNode.parent = this;
-			this.children.add(childNode);
-			this.registerChildForSearch(childNode);
-			return childNode;
-		}
-		
-		public int getLevel(){
-			if (this.isRoot()){
-				return 0;
-			}
-			else{
-				return parent.getLevel() + 1;
-			}
-		}
-		
-		public void registerChildForSearch(TreeNode<T> node){
-			elementsIndex.add(node);
-			if (parent != null){
-				parent.registerChildForSearch(node);
-			}
-		}
-		
-		public TreeNode<T> findTreeNode(Comparable<T> cmp){
-			for (TreeNode<T> element : this.elementsIndex){
-				T elemData = element.data;
-				if(cmp.compareTo(elemData) == 0){
-					return element;
-				}
-			}
-			return null;
-		}
-	}
-	
 		
 	public static void main(String[] args) throws UnknownHostException, IOException{
 		
 		//////////////////////////////////////////////////
 		// JOIN SERVER
 		//////////////////////////////////////////////////
-		
-		
-		
+
 		clientSocket = new Socket("beastMode.ddns.net", 63400);
 		inputLine = new BufferedReader(new InputStreamReader(System.in));
 		os = new PrintStream(clientSocket.getOutputStream());
@@ -361,12 +276,10 @@ public class playerMain {
 		// NOTE ALONG WITH THE GIVE BOARD ... THE PREVIOUS MOVE IS AVAILABLE IN STRING previousMove
 		//
 		////////////////////////////////////////////////////////
-		
+
 		/*
-		 * calculate when to stop placing random stuff
+		 * Main program. Will run the main algorithm until it can place a move.
 		 */
-		
-		//calculation number of free pieces here
 		playerMove = mainAlgo();
 		if(playerMove.equals("")){
 			playerMove = backUpAlgo(previousMove, boardMatrix);
@@ -376,6 +289,16 @@ public class playerMain {
 		//////////////////////////////////////////////////////
 		return playerMove;
 	}
+	/*******************************
+	 * Main Algorithm 
+	 ********************************/
+	/*
+	 * This algorithm will split the rows and columns up and solves each one
+	 * As a separate sub array. This way, it will try to find a winning
+	 * solution horizontally or vertically. If not winning solution is present
+	 * it will go to the back up algorithm which is meant to place "randomly"
+	 * to end the turn.
+	 */
 	public static String mainAlgo(){
 		String playerMove = "";
 		playerMove = bestRow();
@@ -384,6 +307,16 @@ public class playerMain {
 		}
 		return playerMove;
 	}
+	/*
+	 * This function splits the board into individual rows. Then takes each row
+	 * and tries to find a winning solution. It wins when there are 2-4 empty
+	 * consecutive spots.
+	 * 1 consecutive spot  = 0 turns left (not winning)
+	 * 2 consecutive spots = 1 turn left
+	 * 3 consecutive spots = 1 turn left
+	 * 4 consecutive spots = possible 1 turn left
+	 * 5 consecutive spots = 2 turns left (not winning)
+	 */
 	public static String bestRow(){
 		String playerMove = "";
 		int rowNum = 0;
@@ -402,6 +335,12 @@ public class playerMain {
 			}
 		}
 		int longest = findNext(tempArr);
+		/*
+		 * Builds the playerMove based on the longest consecutive spots it received.
+		 * If it is not 2/3/4, then it will not find a move and will return an empty
+		 * move. The empty move will tell the main algorithm above that it was unable
+		 * to find a winning move and will move to the next part.
+		 */
 		if(longest == 4){
 			for(int i = 0; i < 5; i++){
 				if(tempArr[i] == 'O' && tempArr[i+1] == 'O'){
@@ -417,6 +356,16 @@ public class playerMain {
 		}
 		return playerMove;
 	}
+	/*
+	 * This function splits the board into individual columns. Then takes each
+	 * column and tries to find a winning solution. It wins when there are 2-4 
+	 * empty consecutive spots.
+	 * 1 consecutive spot  = 0 turns left (not winning)
+	 * 2 consecutive spots = 1 turn left
+	 * 3 consecutive spots = 1 turn left
+	 * 4 consecutive spots = possible 1 turn left
+	 * 5 consecutive spots = 2 turns left (not winning)
+	 */
 	public static String bestCol(){
 		String playerMove = "";
 		int colNum = 0;
@@ -436,6 +385,12 @@ public class playerMain {
 			}
 			colNum++;
 		}
+		/*
+		 * Builds the playerMove based on the longest consecutive spots it received.
+		 * If it is not 2/3/4, then it will not find a move and will return an empty
+		 * move. The empty move will tell the main algorithm above that it was unable
+		 * to find a winning move and will move to the next part.
+		 */
 		int longest = findNext(tempArr);
 		if(longest == 4){
 			for(int i = 0; i < 5; i++){
@@ -452,6 +407,10 @@ public class playerMain {
 		}
 		return playerMove;
 	}
+	/*
+	 * Finds the longest chain of empty spots in the sub array. Longest chain
+	 * will indicate whether the sub array has a winning move in it.
+	 */
 	public static int findNext(char tempArr[]){
 		int longest = 0;
 		int i = 0;

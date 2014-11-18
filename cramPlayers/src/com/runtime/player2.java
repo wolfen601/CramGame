@@ -8,7 +8,6 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Stack;
-import java.util.StringTokenizer;
 import java.util.Random;
 
 
@@ -304,7 +303,9 @@ public class player2 {
 				//
 				////////////////////////////////////////////////////////
 				
-				
+				/*
+				 * Main program. Will run the main algorithm until it can place a move.
+				 */
 				playerMove = mainAlgo();
 				if(playerMove.equals("")){
 					playerMove = backUpAlgo(previousMove, boardMatrix);
@@ -314,6 +315,16 @@ public class player2 {
 				//////////////////////////////////////////////////////
 				return playerMove;
 			}
+			/*******************************
+			 * Main Algorithm 
+			 ********************************/
+			/*
+			 * This algorithm will split the rows and columns up and solves each one
+			 * As a separate sub array. This way, it will try to find a winning
+			 * solution horizontally or vertically. If not winning solution is present
+			 * it will go to the back up algorithm which is meant to place "randomly"
+			 * to end the turn.
+			 */
 			public static String mainAlgo(){
 				String playerMove = "";
 				playerMove = bestRow();
@@ -322,6 +333,16 @@ public class player2 {
 				}
 				return playerMove;
 			}
+			/*
+			 * This function splits the board into individual rows. Then takes each row
+			 * and tries to find a winning solution. It wins when there are 2-4 empty
+			 * consecutive spots.
+			 * 1 consecutive spot  = 0 turns left (not winning)
+			 * 2 consecutive spots = 1 turn left
+			 * 3 consecutive spots = 1 turn left
+			 * 4 consecutive spots = possible 1 turn left
+			 * 5 consecutive spots = 2 turns left (not winning)
+			 */
 			public static String bestRow(){
 				String playerMove = "";
 				int rowNum = 0;
@@ -340,6 +361,12 @@ public class player2 {
 					}
 				}
 				int longest = findNext(tempArr);
+				/*
+				 * Builds the playerMove based on the longest consecutive spots it received.
+				 * If it is not 2/3/4, then it will not find a move and will return an empty
+				 * move. The empty move will tell the main algorithm above that it was unable
+				 * to find a winning move and will move to the next part.
+				 */
 				if(longest == 4){
 					for(int i = 0; i < 5; i++){
 						if(tempArr[i] == 'O' && tempArr[i+1] == 'O'){
@@ -355,6 +382,16 @@ public class player2 {
 				}
 				return playerMove;
 			}
+			/*
+			 * This function splits the board into individual columns. Then takes each
+			 * column and tries to find a winning solution. It wins when there are 2-4 
+			 * empty consecutive spots.
+			 * 1 consecutive spot  = 0 turns left (not winning)
+			 * 2 consecutive spots = 1 turn left
+			 * 3 consecutive spots = 1 turn left
+			 * 4 consecutive spots = possible 1 turn left
+			 * 5 consecutive spots = 2 turns left (not winning)
+			 */
 			public static String bestCol(){
 				String playerMove = "";
 				int colNum = 0;
@@ -374,6 +411,12 @@ public class player2 {
 					}
 					colNum++;
 				}
+				/*
+				 * Builds the playerMove based on the longest consecutive spots it received.
+				 * If it is not 2/3/4, then it will not find a move and will return an empty
+				 * move. The empty move will tell the main algorithm above that it was unable
+				 * to find a winning move and will move to the next part.
+				 */
 				int longest = findNext(tempArr);
 				if(longest == 4){
 					for(int i = 0; i < 5; i++){
@@ -390,6 +433,10 @@ public class player2 {
 				}
 				return playerMove;
 			}
+			/*
+			 * Finds the longest chain of empty spots in the sub array. Longest chain
+			 * will indicate whether the sub array has a winning move in it.
+			 */
 			public static int findNext(char tempArr[]){
 				int longest = 0;
 				int i = 0;
@@ -575,4 +622,4 @@ public class player2 {
 				}
 				return -1;
 			}
-}
+		}
