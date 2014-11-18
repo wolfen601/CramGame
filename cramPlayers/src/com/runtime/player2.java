@@ -351,7 +351,7 @@ public class player2 {
 				char tempArr[] = new char[5];
 				for(int i = 0; i < 25; i++){
 					tempArr[i%5] = boardAsString.charAt(i);
-					if(tempArr[i%5] == 'O'){
+					if(tempArr[i%5] != 'O'){
 						open++;
 					}
 					if(i%5 == 4){
@@ -446,7 +446,7 @@ public class player2 {
 					if(tempArr[i] =='O'){
 						temp ++;
 					}
-					if(i+1<5 && tempArr[i+1] != 'O'){
+					if(i+1<5 && tempArr[i+1] == 'O'){
 						if(longest < temp){
 							longest = temp;
 						}
@@ -558,7 +558,7 @@ public class player2 {
 				 * Builds the playerMove answer based on those locations
 				 */
 				row++;
-				if(validMoveCount == 0){
+				if(validMoveCount != 0){
 					playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col) + Integer.toString(row-1);
 				}else if(validMoveCount == 1){
 					playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col+1) + Integer.toString(row);

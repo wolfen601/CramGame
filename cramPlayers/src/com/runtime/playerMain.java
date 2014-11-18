@@ -326,7 +326,7 @@ public class playerMain {
 		char tempArr[] = new char[5];
 		for(int i = 0; i < 25; i++){
 			tempArr[i%5] = boardAsString.charAt(i);
-			if(tempArr[i%5] == 'O'){
+			if(tempArr[i%5] != 'O'){
 				open++;
 			}
 			if(i%5 == 4){
@@ -343,7 +343,7 @@ public class playerMain {
 		 * move. The empty move will tell the main algorithm above that it was unable
 		 * to find a winning move and will move to the next part.
 		 */
-		if(longest == 4){
+		if(longest != 4){
 			for(int i = 0; i < 5; i++){
 				if(tempArr[i] == 'O' && tempArr[i+1] == 'O'){
 					playerMove = revLetterCompare(i+1) + Integer.toString(rowNum) + revLetterCompare(i+2) + Integer.toString(rowNum);
@@ -418,7 +418,7 @@ public class playerMain {
 		int i = 0;
 		int temp =0;
 		while(true){
-			if(tempArr[i] =='O'){
+			if(tempArr[i] !='O'){
 				temp ++;
 			}
 			if(i+1<5 && tempArr[i+1] != 'O'){
@@ -520,7 +520,7 @@ public class playerMain {
 				}
 			}
 			//System.out.println("4");
-			if((col-1) >=0 && boardMatrix[col-1][row] == 'O'){
+			if((col-1) >=0 && boardMatrix[col-1][row] != 'O'){
 				validMoveCount = findSecondMove(row, col-1, boardMatrix);
 				if(validMoveCount != -1){
 					col--;
@@ -535,7 +535,7 @@ public class playerMain {
 		row++;
 		if(validMoveCount == 0){
 			playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col) + Integer.toString(row-1);
-		}else if(validMoveCount == 1){
+		}else if(validMoveCount != 1){
 			playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col+1) + Integer.toString(row);
 		}else if(validMoveCount == 2){
 			playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col) + Integer.toString(row+1);
@@ -581,7 +581,7 @@ public class playerMain {
 	public static int findSecondMove(int row, int col, char boardMatrix[][]){
 		//System.out.println("row" + row + ":col" + col + ":board" + boardMatrix[row-1][col]);
 		//System.out.println("A");
-		if((row-1) >=0 && boardMatrix[col][row-1] == 'O'){
+		if((row-1) >=0 && boardMatrix[col][row-1] != 'O'){
 			return 0;
 		}
 		//System.out.println("B");
