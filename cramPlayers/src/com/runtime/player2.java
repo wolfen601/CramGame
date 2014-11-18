@@ -305,43 +305,118 @@ public class player2 {
 				////////////////////////////////////////////////////////
 				
 				
-				/*
-				 * calculate when to stop placing random stuff
-				 */
-				
-				//calculation number of free pieces here
-				int numFreeBlocks = 16;
-				//numFreeBlocks = calcFree();
-				if(numFreeBlocks > 15){
-					playerMove = kevAlgo(previousMove, boardMatrix);
-				}else{
-					//insert nimbers tree thing here Dan
-					playerMove = danAlgo(previousMove, boardMatrix);
-					//System.out.println("Enter move (for testing, to be replaced with algorithm):");
-					//playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
-					
-					
+				playerMove = mainAlgo();
+				if(playerMove.equals("")){
+					playerMove = backUpAlgo(previousMove, boardMatrix);
 				}
-				//System.out.println("Enter move (for testing, to be replaced with algorithm):");
-				//playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
-				
-				
-				
 				//////////////////////////////////////////////////////
 				// END OF ALGORITHM
 				//////////////////////////////////////////////////////
-				
 				return playerMove;
-				
 			}
-			
+			public static String mainAlgo(){
+				String playerMove = "";
+				playerMove = bestRow();
+				if(playerMove.equals("")){
+					playerMove = bestCol();
+				}
+				return playerMove;
+			}
+			public static String bestRow(){
+				String playerMove = "";
+				int rowNum = 0;
+				int open = 0;
+				char tempArr[] = new char[5];
+				for(int i = 0; i < 25; i++){
+					tempArr[i%5] = boardAsString.charAt(i);
+					if(tempArr[i%5] == 'O'){
+						open++;
+					}
+					if(i%5 == 4){
+						if(open<5 && open>1){
+							break;
+						}
+						rowNum++;
+					}
+				}
+				int longest = findNext(tempArr);
+				if(longest == 4){
+					for(int i = 0; i < 5; i++){
+						if(tempArr[i] == 'O' && tempArr[i+1] == 'O'){
+							playerMove = revLetterCompare(i+1) + Integer.toString(rowNum) + revLetterCompare(i+2) + Integer.toString(rowNum);
+						}
+					}
+				}else if(longest == 3 || longest == 2){
+					for(int i = 0; i < 5; i++){
+						if(tempArr[i] == 'O' && tempArr[i+1] == 'O'){
+							playerMove = revLetterCompare(i) + Integer.toString(rowNum) + revLetterCompare(i+1) + Integer.toString(rowNum);
+						}
+					}
+				}
+				return playerMove;
+			}
+			public static String bestCol(){
+				String playerMove = "";
+				int colNum = 0;
+				int open = 0;
+				char tempArr[] = new char[5];
+				for(int i = 0; i < 5; i++){
+					tempArr[0] = boardAsString.charAt(i);
+					tempArr[1] = boardAsString.charAt(i+5);
+					tempArr[2] = boardAsString.charAt(i+10);
+					tempArr[3] = boardAsString.charAt(i+15);
+					tempArr[4] = boardAsString.charAt(i+20);
+					if(tempArr[i] == 'O'){
+						open++;
+					}
+					if(open<5 && open>1){
+						break;
+					}
+					colNum++;
+				}
+				int longest = findNext(tempArr);
+				if(longest == 4){
+					for(int i = 0; i < 5; i++){
+						if(tempArr[i] == 'O' && tempArr[i+1] == 'O'){
+							playerMove = revLetterCompare(colNum) + Integer.toString(i+1) + revLetterCompare(colNum) + Integer.toString(i+2);
+						}
+					}
+				}else if(longest == 3 || longest == 2){
+					for(int i = 0; i < 5; i++){
+						if(tempArr[i] == 'O' && tempArr[i+1] == 'O'){
+							playerMove = revLetterCompare(colNum) + Integer.toString(i) + revLetterCompare(colNum) + Integer.toString(i+1);
+						}
+					}
+				}
+				return playerMove;
+			}
+			public static int findNext(char tempArr[]){
+				int longest = 0;
+				int i = 0;
+				int temp =0;
+				while(true){
+					if(tempArr[i] =='O'){
+						temp ++;
+					}
+					if(i+1<5 && tempArr[i+1] != 'O'){
+						if(longest < temp){
+							longest = temp;
+						}
+					}
+					i++;
+					if(i > 4){
+						break;
+					}
+				}
+				return longest;
+			}
 			/*
 			 * Placing algorithm to survive in the game. It just tries to find a spot to place,
 			 * If it cannot find a spot, it will move to Nimber algorithm to find a spot.
 			 */
-			public static String kevAlgo(String previousMove,  char boardMatrix[][]) throws IOException{
+			public static String backUpAlgo(String previousMove,  char boardMatrix[][]){
 				/************************
-				 * Kevin's algorithm
+				 * Back up algorithm
 				 ************************/
 				
 				//grab each individual block and push into a stack
@@ -430,7 +505,6 @@ public class player2 {
 						}
 					}
 					prevMove.pop();
-					
 				}
 				/* Will find a move based on the second square location.
 				 * Builds the playerMove answer based on those locations
@@ -444,14 +518,7 @@ public class player2 {
 					playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col) + Integer.toString(row+1);
 				}else if(validMoveCount == 3){
 					playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col-1) + Integer.toString(row);
-				}else{
-					//replace with nimber algorithm if it cannot find a spot
-					
-					playerMove = danAlgo(previousMove, boardMatrix);
-					
-					//System.out.println("Enter move (for testing, to be replaced with algorithm):");
-					//playerMove = inputLine.readLine(); // for now move is just user input, for testing, replace this with your algorithm when ready
-				}
+				}else
 				//push the player move into the stack as well. This will make it able to use it as a reference
 				block1 = playerMove.substring(0, 2);
 				block2 = playerMove.substring(2);
@@ -507,84 +574,5 @@ public class player2 {
 					return 3;
 				}
 				return -1;
-			}
-	
-			public static int calcFree(){
-				int num = 0;
-				for(int index = 0; index < 25; index++){
-					if(boardAsString.charAt(index) == 'O'){
-						num++;
-					}
-				}
-				return num;
-			}
-			public static String danAlgo(String previousMove,  char boardMatrix[][]){
-				int row = 5;
-				int col = 5;
-				boolean bool = false;
-				String split = "0";
-				StringTokenizer st;
-				
-				for (int i = 0; i < row; i++) {
-					for (int j = 0; j < col; j++) {
-						bool = checkSolo(boardMatrix, i, j);
-						if (bool == true) {
-							boardMatrix[i][j] = 'M';
-						}
-						split = checkSplittable(boardMatrix, row, col);
-						st = new StringTokenizer(split);
-						while (st.hasMoreTokens()) {
-							String element = st.nextToken();
-							String letter = element.substring(0,1);
-							String sNumber = element.substring(1);
-							int number = Integer.parseInt(sNumber);
-						}
-						
-					}
-				}
-				return "";
-			}
-
-
-			public static boolean checkSolo(char subMatrix[][], int row, int col) {
-				//if this doesn't work, make a nested loop. Check if it's within the boundaries first, then if everything beside is 'O'.
-				if ((subMatrix[row+1][col] != 'O' && row+1 <= 5) && (subMatrix[row-1][col] != 'O' && row-1 >= 0) && (subMatrix[row][col+1] != 'O' && col+1 <= 5) && (subMatrix[row][col-1] != 'O' && col-1 >=0)) {
-					return true;
-				}
-				return false;
-			}
-			public static String checkSplittable(char subMatrix[][], int row, int col) {
-				boolean check = false;
-				String splits = null;
-				int i = 0;
-				int j = 0;
-				for (i = 0; i < row; i++) {
-					for (j = 0; j < col; j++) {
-						if (subMatrix[i][j] != 'O') {
-							check = true;
-							continue;
-						}
-						check = false;
-						break; 
-					}
-					if (check == true) {
-						splits += "R" + Integer.toString(i) + " ";
-					}
-				}
-				
-				for (i = 0; i < col; i++) {
-					for (j = 0; j < row; j++) {
-						if (subMatrix[j][i] != 'O') {
-							check = true;
-							continue;
-						}
-						check = false;
-						break;
-					}
-					if (check == true) {
-						splits += "C" + Integer.toString(j) + " ";
-					}
-				}
-				return splits;
 			}
 }
