@@ -308,6 +308,7 @@ public class player2 {
 				 */
 				playerMove = mainAlgo();
 				if(playerMove.equals("")){
+					System.out.println("Using backup!");
 					playerMove = backUpAlgo(previousMove, boardMatrix);
 				}
 				//////////////////////////////////////////////////////

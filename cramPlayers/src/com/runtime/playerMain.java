@@ -282,6 +282,7 @@ public class playerMain {
 		 */
 		playerMove = mainAlgo();
 		if(playerMove.equals("")){
+			System.out.println("Using backup!");
 			playerMove = backUpAlgo(previousMove, boardMatrix);
 		}
 		//////////////////////////////////////////////////////
@@ -319,6 +320,7 @@ public class playerMain {
 	 */
 	public static String bestRow(){
 		String playerMove = "";
+		
 		int rowNum = 0;
 		int open = 0;
 		char tempArr[] = new char[5];
