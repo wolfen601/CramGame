@@ -13,19 +13,85 @@ import java.util.StringTokenizer;
 import java.lang.Integer;
 import java.lang.Object;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.swing.tree.TreeNode;
+
+import org.w3c.dom.Node;
 
 
 
 public class playerMain {
 	
-	private class TreeNode {
-		public boolean board[5][5];
+	public class TreeNode<T> {
+		public T data;
+		public TreeNode<T> parent;
+		public List<TreeNode<T>> children;
+		
+		public boolean isRoot() {
+			return parent == null;
+		}
+		
+		public boolean isLeaf() {
+			return children.size() == 0;
+		}
+		
+		private List<TreeNode<T>> elementsIndex;
+		
+		public TreeNode(T data) {
+			this.data = data;
+			this.children = new LinkedList<TreeNode<T>>();
+			this.elementsIndex = new LinkedList<TreeNode<T>>();
+			this.elementsIndex.add(this);
+		}
+		
+		public TreeNode<T> addChild(T child){
+			TreeNode<T> childNode = new TreeNode<T>(child);
+			childNode.parent = this;
+			this.children.add(childNode);
+			this.registerChildForSearch(childNode);
+			return childNode;
+		}
+		
+		public int getLevel(){
+			if (this.isRoot()){
+				return 0;
+			}
+			else{
+				return parent.getLevel() + 1;
+			}
+		}
+		
+		public void registerChildForSearch(TreeNode<T> node){
+			elementsIndex.add(node);
+			if (parent != null){
+				parent.registerChildForSearch(node);
+			}
+		}
+		
+		public TreeNode<T> findTreeNode(Comparable<T> cmp){
+			for (TreeNode<T> element : this.elementsIndex){
+				T elemData = element.data;
+				if(cmp.compareTo(elemData) == 0){
+					return element;
+				}
+			}
+			return null;
+		}
+		
+		/*public boolean board[][];
 		public TreeNode parent;
 		public TreeNode child[];
 		public boolean isWin;
-		public TreeNode (int depth) {
-			this.depth = depth;
-		}
+		public int depth;
+		//constructor for root
+		public TreeNode () {
+			this.depth = 0;
+			board = new boolean[5][5];
+			parent = null;
+			child = null;
+		}*/
 	}
 	
 	
@@ -543,6 +609,10 @@ public class playerMain {
 		}
 		return "";
 	}
+	
+	public static findDepth(char[][] board){
+		
+	}
 		
 	public static ArrayList<Boolean> tempBoard(char tempMatrix[][]){
 		ArrayList<Boolean> boolTable = new ArrayList<Boolean>();
@@ -569,157 +639,204 @@ public class playerMain {
 		return boolTable;	
 	}
 	
-	public static int checkDepth(char )
-
-
-		public static boolean checkSolo(char subMatrix[][], int row, int col) {
-			//if this doesn't work, make a nested loop. Check if it's within the boundaries first, then if everything beside is 'O'.
-			if ((subMatrix[row+1][col] != 'O' && row+1 <= 5) && (subMatrix[row-1][col] != 'O' && row-1 >= 0) && (subMatrix[row][col+1] != 'O' && col+1 <= 5) && (subMatrix[row][col-1] != 'O' && col-1 >=0)) {
-				return true;
-			}
-			return false;
+	public static boolean checkSolo(char subMatrix[][], int row, int col) {
+		//if this doesn't work, make a nested loop. Check if it's within the boundaries first, then if everything beside is 'O'.
+		if ((subMatrix[row+1][col] != 'O' && row+1 <= 5) && (subMatrix[row-1][col] != 'O' && row-1 >= 0) && (subMatrix[row][col+1] != 'O' && col+1 <= 5) && (subMatrix[row][col-1] != 'O' && col-1 >=0)) {
+			return true;
 		}
-		
-		public static char[][] split(char boardMatrix[][]){
-			int r = 1;
-			int c = 1;
-			boolean created = false;
-			char tempMatrix [][] = null;
-			for(int i = 0; i < 5; i++){
-				for(int j = 0; j < 5; j++){
-					if(boardMatrix[j][i] == 'O'){
-						r = calcRowSize(i ,j, boardMatrix,0) * -1;
-						c = calcColSize(i ,j, boardMatrix,0) * -1;
-						if(r > 0 && c > 0){
-							tempMatrix = new char [c][r];
-							created = true;
-							break;
-						}
-		       
-					}
-				}
-				if(created == true){
-					break;
-				}
-			}
-		    
-			for(int i = 0; i < r; i++){
-				for(int j = 0; j < c; j++){
-					tempMatrix[j][i] = boardMatrix[j+c-1][i+r-1];
-				}
-			}	
-				return tempMatrix;
-		}
-		
-		public static int calcRowSize(int row, int col, char boardMatrix[][], int dir){
-			if((row-1) == 0 || boardMatrix[col][row-1] != 'O'){
-				return 1;
-		  	}else if((row+1) == 4 || boardMatrix[col][row+1] != 'O'){
-		  		return 1;
-		  	}else{
-		  		if(boardMatrix[col][row-1] == 'O' && dir >= 0){
-		  			return calcRowSize(row,col, boardMatrix,1) + 1;
-		  		}
-		  		if((col+1) <=4 && boardMatrix[col+1][row] == 'O'){
-		  			return calcRowSize(row,col, boardMatrix,0);
-		  		}
-		  		//System.out.println("C");
-		  		if(boardMatrix[col][row+1] == 'O' && dir <= 1){
-		  			return calcRowSize(row,col, boardMatrix,-1) + 1;
-		  		}
-		  		//System.out.println("D");
-		  		if((col-1) >=0 && boardMatrix[col-1][row] == 'O'){
-		  			return calcRowSize(row,col, boardMatrix,0);
-		  		}
-		  	}
-		  	return 0;
-		  }
-		  	
-	  	public static int calcColSize(int row, int col, char boardMatrix[][], int dir){
-	  		if((col-1) == 0 || boardMatrix[col-1][row] != 'O'){
-	  			return 1;
-	  		}else if((col+1) == 4 || boardMatrix[col+1][row] != 'O'){
-	  			return 1;
-	  		}else{
-	  			if((row-1) >=0 && boardMatrix[col][row-1] == 'O'){
-	  				return calcRowSize(row,col, boardMatrix,0);
-	  			}
-	  			if(boardMatrix[col+1][row] == 'O'){
-	  				return calcRowSize(row,col, boardMatrix,1) + 1;
-	  			}
-	  			//System.out.println("C");
-	  			if((row+1) <=4 && boardMatrix[col][row+1] == 'O'){
-	  				return calcRowSize(row,col, boardMatrix,0);
-	  			}
-	  			//System.out.println("D");
-	  			if(boardMatrix[col-1][row] == 'O'){
-	  				return calcRowSize(row,col, boardMatrix,-1) + 1;
-	  			}
-	  		}
-	  		return 0;
-	  	}
+		return false;
 	}
+	
+	public static char[][] split(char boardMatrix[][]){
+		int r = 1;
+		int c = 1;
+		boolean created = false;
+		char tempMatrix [][] = null;
+		for(int i = 0; i < 5; i++){
+			for(int j = 0; j < 5; j++){
+				if(boardMatrix[j][i] == 'O'){
+					r = calcRowSize(i ,j, boardMatrix,0) * -1;
+					c = calcColSize(i ,j, boardMatrix,0) * -1;
+					if(r > 0 && c > 0){
+						tempMatrix = new char [c][r];
+						created = true;
+						break;
+					}
+	       
+				}
+			}
+			if(created == true){
+				break;
+			}
+		}
+	    
+		for(int i = 0; i < r; i++){
+			for(int j = 0; j < c; j++){
+				tempMatrix[j][i] = boardMatrix[j+c-1][i+r-1];
+			}
+		}	
+			return tempMatrix;
+	}
+	
+	public static int calcRowSize(int row, int col, char boardMatrix[][], int dir){
+		if((row-1) == 0 || boardMatrix[col][row-1] != 'O'){
+			return 1;
+	  	}else if((row+1) == 4 || boardMatrix[col][row+1] != 'O'){
+	  		return 1;
+	  	}else{
+	  		if(boardMatrix[col][row-1] == 'O' && dir >= 0){
+	  			return calcRowSize(row,col, boardMatrix,1) + 1;
+	  		}
+	  		if((col+1) <=4 && boardMatrix[col+1][row] == 'O'){
+	  			return calcRowSize(row,col, boardMatrix,0);
+	  		}
+	  		//System.out.println("C");
+	  		if(boardMatrix[col][row+1] == 'O' && dir <= 1){
+	  			return calcRowSize(row,col, boardMatrix,-1) + 1;
+	  		}
+	  		//System.out.println("D");
+	  		if((col-1) >=0 && boardMatrix[col-1][row] == 'O'){
+	  			return calcRowSize(row,col, boardMatrix,0);
+	  		}
+	  	}
+	  	return 0;
+	  }
+	  	
+  	public static int calcColSize(int row, int col, char boardMatrix[][], int dir){
+  		if((col-1) == 0 || boardMatrix[col-1][row] != 'O'){
+  			return 1;
+  		}else if((col+1) == 4 || boardMatrix[col+1][row] != 'O'){
+  			return 1;
+  		}else{
+  			if((row-1) >=0 && boardMatrix[col][row-1] == 'O'){
+  				return calcRowSize(row,col, boardMatrix,0);
+  			}
+  			if(boardMatrix[col+1][row] == 'O'){
+  				return calcRowSize(row,col, boardMatrix,1) + 1;
+  			}
+  			//System.out.println("C");
+  			if((row+1) <=4 && boardMatrix[col][row+1] == 'O'){
+  				return calcRowSize(row,col, boardMatrix,0);
+  			}
+  			//System.out.println("D");
+  			if(boardMatrix[col-1][row] == 'O'){
+  				return calcRowSize(row,col, boardMatrix,-1) + 1;
+  			}
+  		}
+  		return 0;
+  	}
+  	
+  	public static String thisAlgoTho(char boardMatrix[][]){
+  		String playerMove = "";
+  	    String choose = important();
+  	    int row = Integer.parseInt(choose.substring(0,1));
+  	    int start = Integer.parseInt(choose.substring(2));
+  	    String which = choose.substring(1,2);
+  	    if(which.equals("hor")){
+  	     playerMove = revLetterCompare(start) + Integer.toString(row) + revLetterCompare(start+1) + Integer.toString(row);
+  	    }else if(which.equals("ver")){
+  	     for(int i = 0; i < 5; i ++){
+  	      if(boardMatrix[start][i] == 'O' && boardMatrix[start][i+1] == 'O'){
+  	       row = i;
+  	       break;
+  	      }
+  	     }
+  	     playerMove = revLetterCompare(start) + Integer.toString(row) + revLetterCompare(start) + Integer.toString(row+1);
+  	    }
+  	    
+  	    return playerMove;
+  	    
+  	   }
+  	public static String important(){
+  		int calc[] = new int[5];
+  		int max = 0;
+  		int r = 0;
+  		int repeat = 0;
+  		for(int i = 0; i < 25; i++){
+  			if(boardAsString.charAt(i)=='O'){
+  				calc[i%5] = calc[i%5] + 1;
+  			}
+  		}
+  		for(int i = 0; i < 5; i ++){
+  			if(calc[i] > max){
+  				max = i;
+  			}else if(calc[i] == max){
+  				repeat = calc[i];
+  			}
+  		}
+  		if(max < 1 || repeat == max){
+  			for(int i = 0; i < 25; i++){
+  				if(i%5 != 4){
+  					if(boardAsString.charAt(i)==boardAsString.charAt(i+1)){
+  						r = i/5;
+  						return r + "h" + max;
+  					}
+  				}
+  			}	  	     
+  		}
+  		return "9v" + max;
+  	}
+}
+	
+	/* Check if a string of blocks reaches two edges. If it does, then it is splittable.
+	 * There is a boolean matrix that holds value of whether of not it is an edge block
+	 * both of the values must be true for it to be splittable
+	 * return the values of the edgeBlocks
+	 * greatest block - least block = size of subarray*/
+	/*public static String checkSplittable(char subMatrix[][]) {
+		boolean[] edgeBlock = new boolean[2];
+		String something = "";
+		String retval = "";
 		
-		/* Check if a string of blocks reaches two edges. If it does, then it is splittable.
-		 * There is a boolean matrix that holds value of whether of not it is an edge block
-		 * both of the values must be true for it to be splittable
-		 * return the values of the edgeBlocks
-		 * greatest block - least block = size of subarray*/
-		/*public static String checkSplittable(char subMatrix[][]) {
-			boolean[] edgeBlock = new boolean[2];
-			String something = "";
-			String retval = "";
-			
-			//checks for not open spot.
-			for (int j = 1; j < 4; j++){
-				for(int i = 0; i < 4; i++){
-					if (subMatrix[j][i] != 'O') {
-						//checks if it's an edgeBlock (not affiliated to the edgeBlock Matrix)
-						if ((j+1 <= 4 && j-1 >= 0) || (i+1 <= 4 && i-1 >= 0)){
-							if(subMatrix[j][i+1] != 'O' || subMatrix[j+1][i] != 'O' || subMatrix[j][i+1] != 'O' || subMatrix[j+1][i-1] != 'O' || subMatrix[j][i-1] != 'O'){
-								retval = splittable(subMatrix, j, i);
-							}
+		//checks for not open spot.
+		for (int j = 1; j < 4; j++){
+			for(int i = 0; i < 4; i++){
+				if (subMatrix[j][i] != 'O') {
+					//checks if it's an edgeBlock (not affiliated to the edgeBlock Matrix)
+					if ((j+1 <= 4 && j-1 >= 0) || (i+1 <= 4 && i-1 >= 0)){
+						if(subMatrix[j][i+1] != 'O' || subMatrix[j+1][i] != 'O' || subMatrix[j][i+1] != 'O' || subMatrix[j+1][i-1] != 'O' || subMatrix[j][i-1] != 'O'){
+							retval = splittable(subMatrix, j, i);
 						}
 					}
 				}
 			}
-			return something;
-		}*/
-
-		/*public static String splittable(char subMatrix[][], int col, int row){
-			int temp1 = col;
-			int temp2 = row;
-			ArrayList<String> temp = new ArrayList<String>();
-			//if piece is an edgeBlock, return true
-			if ((temp1+1 <= 4 && temp1-1 >= 0) || (temp2+1 <= 4 && temp2-1 >= 0)){
-				if(subMatrix[temp1][temp2+1] != 'O'){
-					temp.add(splittable(subMatrix, temp1, temp2+1));
-				}
-				if(subMatrix[temp1+1][temp2] != 'O'){
-					temp.add(splittable(subMatrix, temp1+1, temp2));
-				}
-				if(subMatrix[temp1+1][temp2+1] != 'O'){
-					temp.add(splittable(subMatrix, temp1+1, temp2+1));
-				}
-				if(subMatrix[temp1+1][temp2-1] != 'O'){
-					temp.add(splittable(subMatrix, temp1+1, temp2-1));
-				}
-				if(subMatrix[temp1][temp2-1] != 'O'){
-					temp.add(splittable(subMatrix, temp1, temp2-1));
-				}
-				else{
-					return "";
-				}
+		}
+		return something;
+	}*/
+	/*public static String splittable(char subMatrix[][], int col, int row){
+		int temp1 = col;
+		int temp2 = row;
+		ArrayList<String> temp = new ArrayList<String>();
+		//if piece is an edgeBlock, return true
+		if ((temp1+1 <= 4 && temp1-1 >= 0) || (temp2+1 <= 4 && temp2-1 >= 0)){
+			if(subMatrix[temp1][temp2+1] != 'O'){
+				temp.add(splittable(subMatrix, temp1, temp2+1));
 			}
-			//edgeblock
-			else if ((temp1+1 == 5 || temp1-1 == -1) || (temp2+1 == 5 || temp2-1 == -1)) {
-				return Integer.toString(temp1) + Integer.toString(temp2);
+			if(subMatrix[temp1+1][temp2] != 'O'){
+				temp.add(splittable(subMatrix, temp1+1, temp2));
 			}
-			String[] retvalArray = temp.toArray(new String[temp.size()]);
-			String retval = "";
-			for (String str: retvalArray){
-				retval += str;
+			if(subMatrix[temp1+1][temp2+1] != 'O'){
+				temp.add(splittable(subMatrix, temp1+1, temp2+1));
 			}
-			return retval;
-		}*/
+			if(subMatrix[temp1+1][temp2-1] != 'O'){
+				temp.add(splittable(subMatrix, temp1+1, temp2-1));
+			}
+			if(subMatrix[temp1][temp2-1] != 'O'){
+				temp.add(splittable(subMatrix, temp1, temp2-1));
+			}
+			else{
+				return "";
+			}
+		}
+		//edgeblock
+		else if ((temp1+1 == 5 || temp1-1 == -1) || (temp2+1 == 5 || temp2-1 == -1)) {
+			return Integer.toString(temp1) + Integer.toString(temp2);
+		}
+		String[] retvalArray = temp.toArray(new String[temp.size()]);
+		String retval = "";
+		for (String str: retvalArray){
+			retval += str;
+		}
+		return retval;
+	}*/
 //}
