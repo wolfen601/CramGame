@@ -15,7 +15,19 @@ import java.lang.Object;
 import java.util.ArrayList;
 
 
+
 public class playerMain {
+	
+	private class TreeNode {
+		public boolean board[5][5];
+		public TreeNode parent;
+		public TreeNode child[];
+		public boolean isWin;
+		public TreeNode (int depth) {
+			this.depth = depth;
+		}
+	}
+	
 	
 	// The client socket
 	private static Socket clientSocket = null;
@@ -37,6 +49,7 @@ public class playerMain {
 	private static String previousMove;
 	
 	private static Stack<String> prevMove = new Stack<String>();
+	
 		
 	public static void main(String[] args) throws UnknownHostException, IOException{
 		
@@ -531,34 +544,32 @@ public class playerMain {
 		return "";
 	}
 		
-	public static char[][] tempBoard(char tempMatrix[][]){
-		ArrayList<Boolean> bool = new ArrayList<Boolean>();
+	public static ArrayList<Boolean> tempBoard(char tempMatrix[][]){
+		ArrayList<Boolean> boolTable = new ArrayList<Boolean>();
 		for (int i = 0; i < 5; i++){
-			for (int j = 0; i < 5; j++){
+			for (int j = 0; j < 5; j++){
 				if(i=='O' && i+1=='O'){
 					tempMatrix[i][j] = '1';
 					tempMatrix[i+1][j] = '1';
-					tempBoard(tempMatrix);
+					boolTable = tempBoard(tempMatrix);
 				}
 				if(j=='O' && j+1=='O'){
 					tempMatrix[i][j] = '1';
 					tempMatrix[i][j+1] = '1';
-					tempBoard(tempMatrix);
+					boolTable = tempBoard(tempMatrix);
 				}
-				for (int a = 0; a < bool.size(); a++){
-					if(bool.get(a) == false){
-						bool.add(a+1, true);
+				for (int a = 0; a < boolTable.size(); a++){				
+					if(boolTable.get(a) == false){
 						break;
 					}
-					
 				}
-				bool.add(true);
-				return tempMatrix;
 			}
 		}
-		return tempMatrix;
-		
+		boolTable.add(true);
+		return boolTable;	
 	}
+	
+	public static int checkDepth(char )
 
 
 		public static boolean checkSolo(char subMatrix[][], int row, int col) {
