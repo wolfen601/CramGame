@@ -480,6 +480,7 @@ public class playerMain {
 		
 		//grab each individual block and push into a stack
 		String block1 = "";
+		boolean done = false;;
 		String block2 = "";
 		block1 = previousMove.substring(0, 2);
 		block2 = previousMove.substring(2);
@@ -497,84 +498,83 @@ public class playerMain {
 		String temp = "";
 		int row = 0;
 		int col = 0;
-		while(true){
-			currBlock = prevMove.peek();
-			System.out.println("currBlock: " + currBlock);
+		currBlock = prevMove.peek();
+		System.out.println("currBlock: " + currBlock);
+		/*
+		 * if the block is null means the stack is empty or first move is player one.
+		 * generate random number inside the grid to see if it will work
+		 * otherwise use the block inside the stack
+		 */
+		if(currBlock.equals("XX") || currBlock.equals(null)){
 			/*
-			 * if the block is null means the stack is empty or first move is player one.
-			 * generate random number inside the grid to see if it will work
-			 * otherwise use the block inside the stack
-			 */
-			if(currBlock.equals("XX") || currBlock.equals(null)){
-				/*
-				Random random = new Random();
-				while(true){
-					int rand = random.nextInt(25);
-					if(boardMatrix[rand%5][rand/5] == 'O'){
-						row = rand/5;
-						col = rand%5;
-						
+			Random random = new Random();
+			while(true){
+				int rand = random.nextInt(25);
+				if(boardMatrix[rand%5][rand/5] == 'O'){
+					row = rand/5;
+					col = rand%5;
+					
+					break;
+				}
+			}*/
+			for(int c = 0; c < 25; c++){
+				if(boardMatrix[c%5][c/5] == 'O'){
+					if(findSecondMove(c%5,c/5, boardMatrix) != -1){
+						row = c/5;
+						col = c%5;
 						break;
 					}
-				}*/
-				for(int c = 0; c < 25; c++){
-					if(boardMatrix[c%5][c/5] == 'O'){
-						if(findSecondMove(c%5,c/5, boardMatrix) != -1){
-							row = c/5;
-							col = c%5;
-							break;
-						}
-					}
-				}
-				
-			}else{
-				temp = currBlock.substring(0,1);
-				col = letterCompare(temp);
-				temp = currBlock.substring(1);
-				row = Integer.parseInt(temp);
-				row--;
-			}
-			/* These ifs will check the squares around the current block
-			 * If it can find a valid move, tries to find the next valid 
-			 * square around it. If it can find a valid second square, it
-			 * will skip the if statements and move to finding the answer
-			 */
-			//System.out.println("1");
-			//System.out.println("row" + row + ":col" + col);
-			if((row-1) >=0 && boardMatrix[col][row-1] == 'O'){
-				validMoveCount = findSecondMove(row-1, col, boardMatrix);
-				if(validMoveCount != -1){
-					row--;
-					break;
 				}
 			}
-			//System.out.println("row" + row + ":col" + col);
-			//System.out.println("2");
-			if((col+1) <=4 && boardMatrix[col+1][row] == 'O'){
-				validMoveCount = findSecondMove(row, col+1, boardMatrix);
-				if(validMoveCount != -1){
-					col++;
-					break;
-				}
-			}
-			//System.out.println("3");
-			if((row+1) <=4 && boardMatrix[col][row+1] == 'O'){
-				validMoveCount = findSecondMove(row+1, col, boardMatrix);
-				if(validMoveCount != -1){
-					row++;
-					break;
-				}
-			}
-			//System.out.println("4");
-			if((col-1) >=0 && boardMatrix[col-1][row] == 'O'){
-				validMoveCount = findSecondMove(row, col-1, boardMatrix);
-				if(validMoveCount != -1){
-					col--;
-					break;
-				}
-			}
+			
+		}else{
+			temp = currBlock.substring(0,1);
+			col = letterCompare(temp);
+			temp = currBlock.substring(1);
+			row = Integer.parseInt(temp);
+			row--;
 			prevMove.pop();
 		}
+		/* These ifs will check the squares around the current block
+		 * If it can find a valid move, tries to find the next valid 
+		 * square around it. If it can find a valid second square, it
+		 * will skip the if statements and move to finding the answer
+		 */
+		//System.out.println("1");
+		//System.out.println("row" + row + ":col" + col);
+		if((row-1) >=0 && boardMatrix[col][row-1] == 'O' && done == false){
+			validMoveCount = findSecondMove(row-1, col, boardMatrix);
+			if(validMoveCount != -1){
+				row--;
+				done = true;
+			}
+		}
+		//System.out.println("row" + row + ":col" + col);
+		//System.out.println("2");
+		if((col+1) <=4 && boardMatrix[col+1][row] == 'O' && done == false){
+			validMoveCount = findSecondMove(row, col+1, boardMatrix);
+			if(validMoveCount != -1){
+				col++;
+				done = true;
+			}
+		}
+		//System.out.println("3");
+		if((row+1) <=4 && boardMatrix[col][row+1] == 'O' && done == false){
+			validMoveCount = findSecondMove(row+1, col, boardMatrix);
+			if(validMoveCount != -1){
+				row++;
+				done = true;
+			}
+		}
+		//System.out.println("4");
+		if((col-1) >=0 && boardMatrix[col-1][row] == 'O' && done == false){
+			validMoveCount = findSecondMove(row, col-1, boardMatrix);
+			if(validMoveCount != -1){
+				col--;
+				done = true;
+			}
+		}
+		
 		/* Will find a move based on the second square location.
 		 * Builds the playerMove answer based on those locations
 		 */
