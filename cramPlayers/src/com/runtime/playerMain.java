@@ -304,6 +304,7 @@ public class playerMain {
 		String playerMove = "";
 		playerMove = bestRow();
 		if(playerMove.equals("")){
+			System.out.println("Doing col!");
 			playerMove = bestCol();
 		}
 		return playerMove;
@@ -326,13 +327,16 @@ public class playerMain {
 		char tempArr[] = new char[5];
 		for(int i = 0; i < 25; i++){
 			tempArr[i%5] = boardAsString.charAt(i);
-			if(tempArr[i%5] != 'O'){
+			//System.out.println(tempArr[i%5]);
+			if(tempArr[i%5] == 'O'){
 				open++;
 			}
 			if(i%5 == 4){
+				System.out.println("------->" + open);
 				if(open<5 && open>1){
 					break;
 				}
+				open = 0;
 				rowNum++;
 			}
 		}
@@ -343,19 +347,23 @@ public class playerMain {
 		 * move. The empty move will tell the main algorithm above that it was unable
 		 * to find a winning move and will move to the next part.
 		 */
-		if(longest != 4){
-			for(int i = 0; i < 5; i++){
+		System.out.println("Row:" + rowNum + "long:" + longest);
+		if(longest == 4){
+			for(int i = 0; i < 4; i++){
 				if(tempArr[i] == 'O' && tempArr[i+1] == 'O'){
-					playerMove = revLetterCompare(i+1) + Integer.toString(rowNum) + revLetterCompare(i+2) + Integer.toString(rowNum);
+					playerMove = revLetterCompare(i+1) + Integer.toString(rowNum+1) + revLetterCompare(i+2) + Integer.toString(rowNum+1);
+					break;
 				}
 			}
 		}else if(longest == 3 || longest == 2){
-			for(int i = 0; i < 5; i++){
+			for(int i = 0; i < 4; i++){
 				if(tempArr[i] == 'O' && tempArr[i+1] == 'O'){
-					playerMove = revLetterCompare(i) + Integer.toString(rowNum) + revLetterCompare(i+1) + Integer.toString(rowNum);
+					playerMove = revLetterCompare(i) + Integer.toString(rowNum+1) + revLetterCompare(i+1) + Integer.toString(rowNum+1);
+					break;
 				}
 			}
 		}
+		System.out.println(playerMove);
 		return playerMove;
 	}
 	/*
@@ -373,19 +381,22 @@ public class playerMain {
 		int colNum = 0;
 		int open = 0;
 		char tempArr[] = new char[5];
-		for(int i = 0; i < 5; i++){
-			tempArr[0] = boardAsString.charAt(i);
-			tempArr[1] = boardAsString.charAt(i+5);
-			tempArr[2] = boardAsString.charAt(i+10);
-			tempArr[3] = boardAsString.charAt(i+15);
-			tempArr[4] = boardAsString.charAt(i+20);
-			if(tempArr[i] == 'O'){
+		String boardString = buildArr();
+		
+		for(int i = 0; i < 25; i++){
+			tempArr[i%5] = boardString.charAt(i);
+			//System.out.println(tempArr[i%5]);
+			if(tempArr[i%5] == 'O'){
 				open++;
 			}
-			if(open<5 && open>1){
-				break;
+			if(i%5 == 4){
+				System.out.println("------->" + open);
+				if(open<5 && open>1){
+					break;
+				}
+				open = 0;
+				colNum++;
 			}
-			colNum++;
 		}
 		/*
 		 * Builds the playerMove based on the longest consecutive spots it received.
@@ -394,20 +405,34 @@ public class playerMain {
 		 * to find a winning move and will move to the next part.
 		 */
 		int longest = findNext(tempArr);
-		if(longest == 4){
+
+		System.out.println("Col:" + colNum + "long:" + longest);
+		if(longest == 4 || longest == 5){
 			for(int i = 0; i < 5; i++){
 				if(tempArr[i] == 'O' && tempArr[i+1] == 'O'){
-					playerMove = revLetterCompare(colNum) + Integer.toString(i+1) + revLetterCompare(colNum) + Integer.toString(i+2);
+					playerMove = revLetterCompare(colNum) + Integer.toString(i+2) + revLetterCompare(colNum) + Integer.toString(i+3);
+					break;
 				}
 			}
 		}else if(longest == 3 || longest == 2){
 			for(int i = 0; i < 5; i++){
 				if(tempArr[i] == 'O' && tempArr[i+1] == 'O'){
-					playerMove = revLetterCompare(colNum) + Integer.toString(i) + revLetterCompare(colNum) + Integer.toString(i+1);
+					playerMove = revLetterCompare(colNum) + Integer.toString(i+1) + revLetterCompare(colNum) + Integer.toString(i+2);
+					break;
 				}
 			}
 		}
 		return playerMove;
+	}
+	/*
+	 * This just hard codes a temporary array of each column
+	 */
+	public static String buildArr(){
+		String newBoardString = "";
+		for(int i = 0; i < 5; i++){
+			newBoardString = newBoardString + boardAsString.charAt(i) + boardAsString.charAt(i+5) + boardAsString.charAt(i+10) + boardAsString.charAt(i+15) + boardAsString.charAt(i+20);
+		}
+		return newBoardString;
 	}
 	/*
 	 * Finds the longest chain of empty spots in the sub array. Longest chain
@@ -417,8 +442,9 @@ public class playerMain {
 		int longest = 0;
 		int i = 0;
 		int temp =0;
+		/*
 		while(true){
-			if(tempArr[i] !='O'){
+			if(tempArr[i] =='O'){
 				temp ++;
 			}
 			if(i+1<5 && tempArr[i+1] != 'O'){
@@ -429,6 +455,16 @@ public class playerMain {
 			i++;
 			if(i > 4){
 				break;
+			}
+		}*/
+		for(i = 0; i <=4; i++){
+			if(tempArr[i] =='O'){
+				temp ++;
+			}else{
+				if(temp > longest){
+					longest = temp;
+					temp = 0;
+				}
 			}
 		}
 		return longest;
@@ -449,10 +485,8 @@ public class playerMain {
 		block2 = previousMove.substring(2);
 		System.out.println(block1 + ":" + block2);
 		//only pushes valid blocks into the stack. Meaning player one wont push null blocks into a stack when he goes first
-		if(block1 != null && block2 != null){
-			prevMove.push(block1);
-			prevMove.push(block2);
-		}
+		prevMove.push(block1);
+		prevMove.push(block2);
 		/*
 		 * validMoveCount - count until two moves are placed
 		 * currBlock - store the current block
@@ -471,16 +505,28 @@ public class playerMain {
 			 * generate random number inside the grid to see if it will work
 			 * otherwise use the block inside the stack
 			 */
-			if(currBlock == null){
+			if(currBlock.equals("XX") || currBlock.equals(null)){
+				/*
 				Random random = new Random();
 				while(true){
 					int rand = random.nextInt(25);
-					if(boardMatrix[rand%5][rand/5] != 'O'){
+					if(boardMatrix[rand%5][rand/5] == 'O'){
 						row = rand/5;
 						col = rand%5;
+						
 						break;
 					}
+				}*/
+				for(int c = 0; c < 25; c++){
+					if(boardMatrix[c%5][c/5] == 'O'){
+						if(findSecondMove(c%5,c/5, boardMatrix) != -1){
+							row = c/5;
+							col = c%5;
+							break;
+						}
+					}
 				}
+				
 			}else{
 				temp = currBlock.substring(0,1);
 				col = letterCompare(temp);
@@ -520,7 +566,7 @@ public class playerMain {
 				}
 			}
 			//System.out.println("4");
-			if((col-1) >=0 && boardMatrix[col-1][row] != 'O'){
+			if((col-1) >=0 && boardMatrix[col-1][row] == 'O'){
 				validMoveCount = findSecondMove(row, col-1, boardMatrix);
 				if(validMoveCount != -1){
 					col--;
@@ -535,7 +581,7 @@ public class playerMain {
 		row++;
 		if(validMoveCount == 0){
 			playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col) + Integer.toString(row-1);
-		}else if(validMoveCount != 1){
+		}else if(validMoveCount == 1){
 			playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col+1) + Integer.toString(row);
 		}else if(validMoveCount == 2){
 			playerMove = revLetterCompare(col) + Integer.toString(row) + revLetterCompare(col) + Integer.toString(row+1);
@@ -581,7 +627,7 @@ public class playerMain {
 	public static int findSecondMove(int row, int col, char boardMatrix[][]){
 		//System.out.println("row" + row + ":col" + col + ":board" + boardMatrix[row-1][col]);
 		//System.out.println("A");
-		if((row-1) >=0 && boardMatrix[col][row-1] != 'O'){
+		if((row-1) >=0 && boardMatrix[col][row-1] == 'O'){
 			return 0;
 		}
 		//System.out.println("B");
